@@ -3,14 +3,7 @@ import React, { Component } from 'react'
 
 import MetaCoin from 'contracts/MetaCoin.sol';
 import Web3 from 'web3';
-import { FormGroup, ControlLabel, FormControl, HelpBlock, Button } from 'react-bootstrap';
-import TextField from 'material-ui/TextField';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-import baseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
+import { Form, FormGroup, ControlLabel, FormControl, HelpBlock, Button } from 'react-bootstrap';
 
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 MetaCoin.setProvider(provider);
@@ -30,7 +23,7 @@ class SendCoin extends Component {
     e.preventDefault()
     var meta = MetaCoin.deployed();
     console.log(`Recipient Address: ${this.state.recipient}`)
-    console.log(`sender: ${this.props.sender[0].account}`)
+    console.log(`sender: ${this.props.coinbase}`)
     meta.sendCoin(this.state.recipient, this.state.amount, {from: this.props.coinbase}).then(function() {
       console.log('SENT')
     }).catch(function(e) {
@@ -42,20 +35,20 @@ class SendCoin extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(event);
-    console.log("::::" + name + ":::" + value);
+    console.log("::::Main account transcation count::::"+this.props.web3.eth.getTransactionCount(this.props.coinbase));
+    var defaultBlock = this.props.web3.eth.defaultBlock;
+    console.log("::::defaultBlock :::: "+defaultBlock);
+    var sync = this.props.web3.eth.syncing;
+    console.log("::::sync :::: "+sync);
+    var gasPrice = this.props.web3.eth.gasPrice;
+    console.log("::::gasPrice:::"+gasPrice.toString(10));
+    var accounts = this.props.web3.eth.accounts;
+    console.log(":::::Accounts:::"+accounts);
+    console.log("::::" + name + ':::' + value);
     this.setState({
       [name]: value
     });
   }
-
-   handleChange2 = (event, index, value) => this.setState({recipient:value});
-
-
-  getChildContext() {
-     return { muiTheme: getMuiTheme(baseTheme) };
-  }
-
 
 
   renderAccount({
@@ -64,39 +57,10 @@ class SendCoin extends Component {
     return <option key={account} value={account}>{accountName}</option>
   }
 
-  renderAccount2({
-      account, accountName
-  }) {
-    return <MenuItem key={account} value={account} primaryText={accountName} />
-  }
-
   render() {
     return (
-      <form className='SendCoin'>
-        <div>
-          <TextField
-           defaultValue="Default Value"
-           floatingLabelText="Floating Label Text"
-         />
-         <TextField
-          defaultValue="Default Value"
-          floatingLabelText="Floating Label Text"
-        /><br />
+      <Form className='SendCoin' inline>
 
-        <SelectField
-              floatingLabelText="Recipient Address"
-              value={this.state.recipient}
-              onChange={this.handleChange2}
-            >
-            {this.props.sender.map(this.renderAccount2)}
-        </SelectField>
-
-          <TextField
-           defaultValue="Default Value"
-           floatingLabelText="Amount"
-         />
-
-        </div>
         <FormGroup controlId="formControlsSelect">
           <ControlLabel>Recipient Address</ControlLabel>
           <FormControl
@@ -110,18 +74,6 @@ class SendCoin extends Component {
           </FormControl>
         </FormGroup>
 
-        {/*<FormGroup controlId="recipient_address">
-           <ControlLabel>Recipient Address</ControlLabel>
-          <FormControl
-            type="text"
-            name = "recipient"
-            value={this.state.recipient}
-            onChange={this.handleChange}
-            placeholder="Recipient Address"
-            />
-          </FormGroup>
-          */}
-
           <FormGroup controlId="recipient_address">
             <ControlLabel>Amount</ControlLabel>
             <FormControl
@@ -133,14 +85,9 @@ class SendCoin extends Component {
               />
           </FormGroup>
           <Button type="submit" onClick={this.handleSendMeta}> Submit </Button>
-      </form>
+      </Form>
     )
   }
 }
 
 export default SendCoin
-
-
-SendCoin.childContextTypes = {
-    muiTheme: React.PropTypes.object.isRequired,
-};

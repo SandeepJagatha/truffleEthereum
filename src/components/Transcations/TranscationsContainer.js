@@ -3,9 +3,8 @@ import React, {
 }
 from 'react'
 import AccountList from 'components/AccountList/AccountList'
-import SendCoin0 from 'components/SendCoin/SendCoin0'
+import SendCoin from 'components/Transcations/SendCoin'
 import JsonForm from 'components/JsonForm/JsonForm'
-import SendTiaaCoin from 'components/SendCoin/SendTiaaCoin'
 
 import MetaCoin from 'contracts/MetaCoin.sol';
 import Web3 from 'web3';
@@ -46,7 +45,7 @@ class AccountListContainer extends Component {
     }
 
     _getAccountBalances() {
-        this.props.web3.eth.getAccounts(function (err, accs) {
+        this.props.route.web3.eth.getAccounts(function (err, accs) {
             if (err != null) {
                 window.alert('There was an error fetching your accounts.')
                 console.error(err)
@@ -107,15 +106,18 @@ class AccountListContainer extends Component {
         return (
           <Grid>
               <Row className="show-grid">
-                {/*<Col xs={12} md={8}>
-                  < AccountList accounts = { this.state.accounts } />
-                </Col>*/}
-                {/*<<Col xs={12} md={12}>
-                  < SendCoin0 sender={ this.state.expectMainAcc } coinbase={this.state.coinbase}/>
-                </Col>*/}
-                <Col xs={12} md={8}>
-                  < SendTiaaCoin sender={ this.state.expectMainAcc } coinbase={this.state.coinbase}/>
+                <Col xs={12} md={12}>
+                  < AccountList accounts = {
+                      this.state.accounts
+                  }
+                  />
                 </Col>
+                {/*<Col xs={12} md={12}>
+                  < SendCoin sender = { this.state.expectMainAcc  }
+                    coinbase = {this.state.coinbase}
+                    web3 = {this.props.route.web3}
+                  />
+                </Col>*/}
               </Row>
         </Grid>
     )
